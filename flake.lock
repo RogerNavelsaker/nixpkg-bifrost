@@ -1,0 +1,45 @@
+{
+  "nodes": {
+    "bifrost-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1792539171,
+        "narHash": "sha256-qkAn7D/fZkCumpwjD11gSF5MSUKZqQ2/HojYxJJJcCg=",
+        "owner": "maximhq",
+        "repo": "bifrost",
+        "rev": "a05ea20e68bf116a35e9f05b1a3d749624b3935e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "maximhq",
+        "repo": "bifrost",
+        "rev": "a05ea20e68bf116a35e9f05b1a3d749624b3935e",
+        "type": "github"
+      }
+    },
+    "nixpkgs": {
+      "locked": {
+        "lastModified": 1792773339,
+        "narHash": "sha256-rZLrzrC6i+jnTAlvPZHogKDulY7WWDEv9hJeHieO7Zw=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "3ec636362e1816bc2f0888fa0fa2c69f1bc9e504",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixos-unstable",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "root": {
+      "inputs": {
+        "bifrost-src": "bifrost-src",
+        "nixpkgs": "nixpkgs"
+      }
+    }
+  },
+  "root": "root",
+  "version": 7
+}
