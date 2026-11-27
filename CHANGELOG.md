@@ -1,5 +1,13 @@
 # Changelog
 
+## v2.7.0 - 2026-11-27
+
+### Changed
+- Bump to upstream Bifrost 2.7.0 (d979e72); recomputed `npmDepsHash` and `vendorHash`; UI build gets a larger Node heap.
+- Build with Go 1.27.4 via nixpkgs overlay (upstream requirement).
+- Drop `patches/`: upstream 2.7.0 already carries the dependency updates (transport Go deps, DOMPurify, follow-redirects, Vitest, Zod). Vite is upstream's 8.1.6.
+- `.nixpkg-sync.json` now `git-tag` against maximhq/bifrost with `scripts/sync-bifrost.sh` for the central sync.
+
 ## v2.3.2 - 2026-10-28
 
 ### Added

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-image=bifrost:v2.3.2
+image=bifrost:v2.7.0
 if [[ $# -gt 0 ]]; then image=$1; fi
 name="bifrost-smoke-$$"
 network="$name-net"
