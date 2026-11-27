@@ -1,5 +1,5 @@
 {
-  description = "Bifrost 2.3.2 OCI image, built from pinned source with Nix";
+  description = "Bifrost 2.7.0 OCI image, built from pinned source with Nix";
   nixConfig = {
     extra-substituters = [
       "https://cache.nixos.org"
@@ -18,48 +18,53 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     bifrost-src = {
-      url = "github:maximhq/bifrost/a05ea20e68bf116a35e9f05b1a3d749624b3935e";
+      url = "github:maximhq/bifrost/d979e72f205e5ae445002af5cd60d37ee09d22da";
       flake = false;
     };
   };
   outputs = { nixpkgs, bifrost-src, ... }:
     let
       system = "x86_64-linux";
-      pkgs = import nixpkgs { inherit system; };
+      goVersion = "1.27.4";
+      pkgs = import nixpkgs {
+        inherit system;
+        overlays = [
+          (final: prev: {
+            # nixpkgs ships Go 1.27.3; upstream transports/go.mod requires 1.27.4.
+            go_1_27 = prev.go_1_27.overrideAttrs (_: {
+              version = goVersion;
+              src = prev.fetchurl {
+                url = "https://go.dev/dl/go1.27.4.src.tar.gz";
+                hash = "sha256-c8+4VxrsDAEXdofbhxY9Rqog6XeWcncokaoXZU2aYJk=";
+              };
+            });
+          })
+        ];
+      };
       staticPkgs = pkgs.pkgsStatic;
       lib = pkgs.lib;
-      version = "2.3.2";
-      revision = "a05ea20e68bf116a35e9f05b1a3d749624b3935e";
-      # Keep the upstream commit pinned while applying dependency security fixes.
-      uiSource = pkgs.applyPatches {
-        name = "bifrost-ui-security-updates";
-        src = "${bifrost-src}/ui";
-        patches = [ ./patches/ui-security-updates.patch ];
-      };
-      transportSource = pkgs.applyPatches {
-        name = "bifrost-transport-security-updates";
-        src = "${bifrost-src}/transports";
-        patches = [ ./patches/transport-security-updates.patch ];
-      };
+      version = "2.7.0";
+      revision = "d979e72f205e5ae445002af5cd60d37ee09d22da";
       ui = pkgs.buildNpmPackage {
         pname = "bifrost-ui";
         inherit version;
-        src = uiSource;
+        src = "${bifrost-src}/ui";
         nodejs = pkgs.nodejs_24;
-        npmDepsHash = "sha256-QveIkqdisBha6fTQkuZm0PFlg8GYJMgyRaEKS4gVvCo=";
+        npmDepsHash = "sha256-JtaSXBfz7toZ8gF9Jjq5iveV/b5obQNhA9VvjyvDky0=";
         npmBuildScript = "build-enterprise";
+        env.NODE_OPTIONS = "--max-old-space-size=8192";
         installPhase = ''
           mkdir -p "$out"
           cp -R out/. "$out/"
         '';
       };
-      # The transports module requires Go 1.27.3.
+      # The transports module requires Go 1.27.4 (overlay above).
       bifrost = staticPkgs.buildGoLatestModule {
         pname = "bifrost";
         inherit version;
-        src = transportSource;
+        src = "${bifrost-src}/transports";
         subPackages = [ "bifrost-http" ];
-        vendorHash = "sha256-CkBA+2NijJih32Sewz8cRDdiflykBhuda9V5tgD7s9I=";
+        vendorHash = "sha256-OcyxjGlIHaOsQYzAwhPOEb5TWl+wfIk7DWDbE2Y/OrU=";
         tags = [ "sqlite_static" ];
         ldflags = [ "-s" "-w" "-X" "main.Version=v${version}" "-extldflags=-static" ];
         trimpath = true;
